@@ -83,3 +83,39 @@ export function formatRelativeTime(isoString) {
   const diffDays = Math.floor(diffHours / 24);
   return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 }
+
+export async function sendPayloadToCloud(encryptedText) {
+  const formData = new URLSearchParams();
+  formData.append("content", encryptedText);
+  formData.append("expires", "2592000"); // 30 days (seconds)
+  formData.append("format", "url");
+
+  const response = await fetch("https://dpaste.com/api/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    throw new Error(`Cloud storage failure: ${response.status} ${response.statusText}`);
+  }
+
+  const responseText = await response.text();
+  const trimmed = responseText.trim();
+  const pasteID = trimmed.substring(trimmed.lastIndexOf("/") + 1);
+  if (!pasteID) {
+    throw new Error("Invalid response received from cloud storage.");
+  }
+  return pasteID;
+}
+
+export async function fetchPayloadFromCloud(pasteID) {
+  const response = await fetch(`https://dpaste.com/${pasteID}.txt`);
+  if (!response.ok) {
+    throw new Error(`Cloud retrieval failure: ${response.status} ${response.statusText}`);
+  }
+  const responseText = await response.text();
+  return responseText.trim();
+}

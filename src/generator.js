@@ -21,7 +21,8 @@ import {
   copyToClipboard, 
   showToast, 
   sleep, 
-  formatRelativeTime 
+  formatRelativeTime,
+  sendPayloadToCloud
 } from "./utils.js";
 
 // Global state
@@ -76,6 +77,7 @@ const outputContainer = document.getElementById("output-container");
 const outputLink = document.getElementById("output-link");
 const copyLinkBtn = document.getElementById("copy-link-btn");
 const shareLinkBtn = document.getElementById("share-link-btn");
+const toggleShorten = document.getElementById("toggle-shorten");
 
 // Setup PIN inputs helper
 function initPinInputHandlers(containerId) {
@@ -315,6 +317,14 @@ toggleAutoDuress.addEventListener("change", () => {
   clearError(oneTimeDuressInput);
 });
 
+toggleShorten.addEventListener("change", () => {
+  if (toggleShorten.checked) {
+    generateBtn.textContent = "Generate & Shorten Link";
+  } else {
+    generateBtn.textContent = "Generate Secure Link";
+  }
+});
+
 // Inline Duress Update Form
 updateDuressBtn.addEventListener("click", () => {
   updateDuressForm.style.display = "block";
@@ -507,9 +517,16 @@ generateBtn.addEventListener("click", async () => {
     
     generatedHash = await generateHashString(realURL, realPass, decoyURL, duressPass);
     
+    let finalHash = generatedHash;
+    if (toggleShorten.checked) {
+      generateBtn.innerHTML = '<span class="spinner"></span> Shortening...';
+      const pasteID = await sendPayloadToCloud(generatedHash);
+      finalHash = pasteID;
+    }
+
     // Construct absolute target URL
     const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    const secureLink = `${window.location.origin}${basePath}/open/#${generatedHash}`;
+    const secureLink = `${window.location.origin}${basePath}/open/#${finalHash}`;
     
     // Render
     outputLink.textContent = secureLink;

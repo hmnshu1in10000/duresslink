@@ -1,26 +1,83 @@
 import { tryDecryptBlob } from "./crypto.js";
-import { sleep } from "./utils.js";
+import { sleep, fetchPayloadFromCloud } from "./utils.js";
 
 // DOM Elements
 const decryptFormContainer = document.getElementById("decrypt-form-container");
 const expiredErrorContainer = document.getElementById("expired-error-container");
+const loadingContainer = document.getElementById("loading-container");
 const decryptForm = document.getElementById("decrypt-form");
 const passwordInput = document.getElementById("receiver-password");
 const togglePasswordBtn = document.getElementById("toggle-receiver-password");
 const openBtn = document.getElementById("open-btn");
 const passwordError = document.getElementById("receiver-password-error");
 
-// Parse hash on page load
-const hash = window.location.hash.slice(1);
-const parts = hash ? hash.split(".") : [];
-const isValidHash = hash && parts.length === 3 && parts[0] === "v1" && parts[1] && parts[2];
+// Global memory for parsed payloads
+let decryptedParts = null;
 
-if (!isValidHash) {
+// Initialization Flow
+async function init() {
+  const hash = window.location.hash.slice(1);
+  if (!hash) {
+    showExpiredError();
+    return;
+  }
+
+  // Option 1: Standard Link (e.g. #v1.blobA.blobB)
+  const parts = hash.split(".");
+  if (parts.length === 3 && parts[0] === "v1" && parts[1] && parts[2]) {
+    decryptedParts = {
+      blobX: parts[1],
+      blobY: parts[2]
+    };
+    showDecryptForm();
+    return;
+  }
+
+  // Option 2: Shortened Link (alphanumeric token representing paste ID)
+  if (/^[A-Za-z0-9]+$/.test(hash)) {
+    showLoading();
+    try {
+      const rawPayload = await fetchPayloadFromCloud(hash);
+      const cloudParts = rawPayload ? rawPayload.split(".") : [];
+      
+      if (cloudParts.length === 3 && cloudParts[0] === "v1" && cloudParts[1] && cloudParts[2]) {
+        decryptedParts = {
+          blobX: cloudParts[1],
+          blobY: cloudParts[2]
+        };
+        hideLoading();
+        showDecryptForm();
+        return;
+      }
+    } catch (err) {
+      console.error("Link retrieval failed:", err);
+    }
+  }
+
+  // Fallback: Invalid or expired shortened/standard hash
+  hideLoading();
+  showExpiredError();
+}
+
+function showLoading() {
+  decryptFormContainer.style.display = "none";
+  expiredErrorContainer.style.display = "none";
+  loadingContainer.style.display = "block";
+}
+
+function hideLoading() {
+  loadingContainer.style.display = "none";
+}
+
+function showDecryptForm() {
+  decryptFormContainer.style.display = "block";
+  expiredErrorContainer.style.display = "none";
+  passwordInput.focus();
+}
+
+function showExpiredError() {
   decryptFormContainer.style.display = "none";
   expiredErrorContainer.style.display = "block";
-} else {
-  // Autofocus the password field for immediate interaction
-  passwordInput.focus();
 }
 
 // Show/Hide password toggler
@@ -34,7 +91,7 @@ togglePasswordBtn.addEventListener("click", () => {
 decryptForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   
-  if (!isValidHash) return;
+  if (!decryptedParts) return;
   
   const enteredPassword = passwordInput.value;
   if (!enteredPassword) return;
@@ -45,8 +102,7 @@ decryptForm.addEventListener("submit", async (e) => {
   openBtn.innerHTML = '<span class="spinner"></span> Opening...';
   passwordError.style.display = "none";
 
-  const blobX = parts[1];
-  const blobY = parts[2];
+  const { blobX, blobY } = decryptedParts;
 
   try {
     // Attempt parallel decryption of both blobs
@@ -84,3 +140,6 @@ decryptForm.addEventListener("submit", async (e) => {
     passwordInput.focus();
   }
 });
+
+// Run Page Init
+init();

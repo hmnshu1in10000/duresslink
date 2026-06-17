@@ -74,6 +74,15 @@
         </div>
       </div>
 
+      <!-- Shorten Link Toggle -->
+      <div class="toggle-group" style="margin-top: 1.5rem;">
+        <span class="toggle-label">Shorten link</span>
+        <label class="switch">
+          <input type="checkbox" id="toggle-shorten">
+          <span class="slider"></span>
+        </label>
+      </div>
+
       <!-- Duress Password Section -->
       <div class="toggle-group" style="margin-top: 1.5rem;">
         <span class="toggle-label">Use saved duress password</span>
@@ -155,6 +164,23 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- Educational Section -->
+  <div class="app-container" style="margin-top: 1rem;">
+    <h2 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem; letter-spacing: -0.01em;">How SecureNote Works</h2>
+    <ul style="list-style: none; display: flex; flex-direction: column; gap: 1.25rem; font-size: 0.9rem; color: var(--color-muted); padding: 0;">
+      <li style="position: relative; padding-left: 1.5rem; line-height: 1.6;">
+        <span style="position: absolute; left: 0; color: var(--color-accent); font-size: 0.8rem;">■</span>
+        <strong style="color: var(--color-text); display: block; margin-bottom: 0.25rem;">Standard Links (Unshortened)</strong>
+        100% decentralized. All encrypted payloads live natively inside the URL itself. These links can never be blocked, traced, or deleted, and will work forever.
+      </li>
+      <li style="position: relative; padding-left: 1.5rem; line-height: 1.6;">
+        <span style="position: absolute; left: 0; color: var(--color-accent); font-size: 0.8rem;">■</span>
+        <strong style="color: var(--color-text); display: block; margin-bottom: 0.25rem;">Shortened Links</strong>
+        The app securely streams the encrypted text block to an anonymous, zero-knowledge storage vault. To ensure performance, these links automatically expire and self-destruct after exactly 1 month.
+      </li>
+    </ul>
   </div>
 
   <!-- Vault Setup Modal -->
