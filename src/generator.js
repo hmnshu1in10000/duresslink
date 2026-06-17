@@ -508,7 +508,7 @@ generateBtn.addEventListener("click", async () => {
     generatedHash = await generateHashString(realURL, realPass, decoyURL, duressPass);
     
     // Construct absolute target URL
-    const basePath = window.location.pathname.substring(0, window.location.lastIndexOf('/'));
+    const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
     const secureLink = `${window.location.origin}${basePath}/open/#${generatedHash}`;
     
     // Render
@@ -528,6 +528,7 @@ generateBtn.addEventListener("click", async () => {
       await incrementDecoyUsage(decoyId);
     }
   } catch (err) {
+    console.error("Link generation error:", err);
     showToast("Failed to generate link.", "error");
   } finally {
     // Security Scrubbing
