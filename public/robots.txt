@@ -1,0 +1,4 @@
+User-agent: *
+Disallow: /open/
+Disallow: /settings/
+Allow: /

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureNote — Settings</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <a href="../" class="nav-btn">← Back</a>
+      <h1>Settings</h1>
+      <div style="width: 45px;"></div> <!-- spacer -->
+    </header>
+
+    <main>
+      <!-- Section: Duress Password -->
+      <div class="section-divider">
+        <span class="section-title">Duress Password</span>
+      </div>
+      <div style="font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1rem;">
+        Your saved password is used automatically when the toggle is on. It is never shown, even here.
+      </div>
+      <div class="info-box" id="settings-duress-info">
+        <div class="info-box-content">
+          <span class="info-box-title" id="settings-duress-status">Saved password is set</span>
+          <span class="info-box-subtitle" id="settings-duress-updated">Updated just now</span>
+        </div>
+        <div class="info-box-actions">
+          <button type="button" class="btn btn-small" id="settings-update-duress-btn">Update Password</button>
+          <button type="button" class="btn btn-small" id="settings-reset-duress-btn">Reset to Default</button>
+        </div>
+      </div>
+
+      <!-- Inline Duress Password Form (Hidden by default) -->
+      <div class="inline-form" id="settings-update-duress-form" style="display: none;">
+        <h3>Update Duress Password</h3>
+        
+        <div class="form-group" id="settings-pin-confirm-group" style="display: none;">
+          <label for="settings-confirm-vault-pin">Confirm Vault PIN</label>
+          <div class="input-wrapper">
+            <input type="password" id="settings-confirm-vault-pin" placeholder="Enter PIN" class="mono" maxlength="4" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="settings-confirm-vault-pin-error">Incorrect PIN.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="settings-new-duress-password">New Duress Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="settings-new-duress-password" placeholder="Enter new duress password" class="mono" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="settings-new-duress-password-error">Please enter a password.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="settings-confirm-duress-password">Confirm Duress Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="settings-confirm-duress-password" placeholder="Confirm new duress password" class="mono" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="settings-confirm-duress-password-error">Passwords do not match.</div>
+        </div>
+
+        <div class="inline-form-actions">
+          <button type="button" class="btn btn-small btn-primary" id="settings-save-duress-btn">Save</button>
+          <button type="button" class="btn btn-small" id="settings-cancel-duress-btn">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Section: Saved Decoys -->
+      <div class="section-divider">
+        <span class="section-title">Saved Decoys</span>
+      </div>
+      <div style="font-size: 0.9rem; color: var(--color-muted); margin-bottom: 1rem;">
+        Reusable innocent destinations
+      </div>
+      
+      <!-- List of decoys -->
+      <div class="decoy-list" id="saved-decoys-list">
+        <!-- Rendered dynamically -->
+        <div style="text-align: center; color: var(--color-muted); font-size: 0.9rem; padding: 1rem 0;">No saved decoys yet.</div>
+      </div>
+
+      <!-- Add decoy form -->
+      <div class="inline-form">
+        <h3>Add Reusable Decoy</h3>
+        <div class="form-group">
+          <label for="new-decoy-url">URL</label>
+          <div class="input-wrapper">
+            <input type="text" id="new-decoy-url" placeholder="https://news.ycombinator.com" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="new-decoy-url-error">Please enter a valid HTTP/HTTPS URL.</div>
+        </div>
+        <div class="form-group">
+          <label for="new-decoy-label">Label</label>
+          <div class="input-wrapper">
+            <input type="text" id="new-decoy-label" placeholder="Hacker News" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="new-decoy-label-error">Please enter a label.</div>
+        </div>
+        <button type="button" class="btn" id="add-decoy-btn" style="width: 100%;">+ Add Decoy</button>
+      </div>
+
+      <!-- Section: Defaults -->
+      <div class="section-divider">
+        <span class="section-title">Defaults</span>
+      </div>
+      
+      <div class="toggle-group">
+        <span class="toggle-label">Auto-generate Wikipedia decoy</span>
+        <label class="switch">
+          <input type="checkbox" id="pref-auto-wikipedia">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-group" style="margin-top: 1rem;">
+        <span class="toggle-label">Use saved duress password</span>
+        <label class="switch">
+          <input type="checkbox" id="pref-auto-duress">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Section: Vault -->
+      <div class="section-divider">
+        <span class="section-title">Vault</span>
+      </div>
+
+      <div class="info-box">
+        <div class="info-box-content">
+          <span class="info-box-title">Change vault PIN</span>
+          <span class="info-box-subtitle">Modify the 4-digit code protecting settings</span>
+        </div>
+        <div class="info-box-actions">
+          <button type="button" class="btn btn-small" id="change-pin-toggle-btn">→</button>
+        </div>
+      </div>
+
+      <!-- Inline PIN Change Form -->
+      <div class="inline-form" id="change-pin-form" style="display: none;">
+        <h3>Change Vault PIN</h3>
+        
+        <div class="form-group" id="change-pin-old-group">
+          <label for="old-vault-pin">Current PIN</label>
+          <div class="input-wrapper">
+            <input type="password" id="old-vault-pin" placeholder="Enter current PIN" class="mono" maxlength="4" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="old-vault-pin-error">Incorrect PIN.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="new-vault-pin">New PIN (4 digits)</label>
+          <div class="input-wrapper">
+            <input type="password" id="new-vault-pin" placeholder="Enter new PIN" class="mono" maxlength="4" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="new-vault-pin-error">Must be 4 digits.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-new-vault-pin">Confirm New PIN</label>
+          <div class="input-wrapper">
+            <input type="password" id="confirm-new-vault-pin" placeholder="Confirm new PIN" class="mono" maxlength="4" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="confirm-new-vault-pin-error">PINs do not match.</div>
+        </div>
+
+        <div class="inline-form-actions">
+          <button type="button" class="btn btn-small btn-primary" id="save-pin-btn">Save PIN</button>
+          <button type="button" class="btn btn-small" id="cancel-pin-btn">Cancel</button>
+        </div>
+      </div>
+
+      <div class="info-box" style="border-color: rgba(239, 68, 68, 0.3);">
+        <div class="info-box-content">
+          <span class="info-box-title" style="color: var(--color-error);">Clear all data</span>
+          <span class="info-box-subtitle">Delete vault, settings, decoys and passwords</span>
+        </div>
+        <div class="info-box-actions">
+          <button type="button" class="btn btn-small btn-destructive" id="clear-all-btn">⚠ Delete</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Vault Unlock Modal (Triggered if vault is set up but key not initialized in memory) -->
+  <div class="modal-overlay" id="settings-unlock-modal">
+    <div class="modal-content">
+      <div class="modal-title">Unlock Secure Vault</div>
+      <div class="modal-body">
+        Enter your 4-digit PIN to access your settings.
+      </div>
+      <div class="pin-inputs" id="settings-unlock-pin-inputs">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="error-message" id="settings-unlock-pin-error" style="text-align: center; margin-bottom: 1rem;">Incorrect PIN. Please try again.</div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="settings-unlock-submit-btn">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="../src/settings.js"></script>
+</body>
+</html>

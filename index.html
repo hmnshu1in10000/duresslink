@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureNote — Private link sharing</title>
+  <link rel="stylesheet" href="./styles/main.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>SecureNote</h1>
+      <a href="./settings/" class="nav-btn" id="settings-nav-btn">⚙ Settings</a>
+    </header>
+
+    <main>
+      <!-- Real URL Inputs -->
+      <div class="form-group">
+        <label for="real-url">Your link</label>
+        <div class="input-wrapper">
+          <input type="text" id="real-url" placeholder="Paste the link you want to protect..." autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div class="error-message" id="real-url-error">Please enter a valid HTTP/HTTPS URL.</div>
+      </div>
+
+      <!-- Real Password Inputs -->
+      <div class="form-group">
+        <label for="real-password">Password</label>
+        <div class="input-wrapper">
+          <input type="password" id="real-password" placeholder="Minimum 8 characters" class="mono" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button type="button" class="show-password-btn" id="toggle-real-password">Show</button>
+        </div>
+        <div class="error-message" id="real-password-error">Password must be at least 8 characters.</div>
+      </div>
+
+      <!-- Decoy Settings Section -->
+      <div class="section-divider">
+        <span class="section-title">Decoy settings</span>
+      </div>
+
+      <div class="toggle-group">
+        <span class="toggle-label">Auto-generate decoy</span>
+        <label class="switch">
+          <input type="checkbox" id="toggle-auto-decoy" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Decoy Info Box (Auto ON) -->
+      <div class="info-box" id="auto-decoy-container">
+        <div class="info-box-content">
+          <span class="info-box-title" id="auto-decoy-title">Fetching decoy...</span>
+          <span class="info-box-subtitle" id="auto-decoy-url">Please wait</span>
+        </div>
+        <div class="info-box-actions">
+          <button type="button" class="btn btn-small" id="regenerate-decoy-btn">🔄 Regenerate</button>
+          <button type="button" class="btn btn-small" id="edit-decoy-btn">✎ Edit</button>
+        </div>
+      </div>
+
+      <!-- Manual Decoy Inputs (Auto OFF) -->
+      <div class="form-group" id="manual-decoy-container" style="display: none;">
+        <label for="decoy-url">Decoy URL</label>
+        <div class="input-wrapper" style="margin-bottom: 0.75rem;">
+          <input type="text" id="decoy-url" placeholder="https://example.com/decoy" autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div class="error-message" id="decoy-url-error">Please enter a valid HTTP/HTTPS URL.</div>
+
+        <label for="saved-decoy-select" style="margin-top: 0.75rem;">Or select from saved</label>
+        <div class="input-wrapper">
+          <select id="saved-decoy-select">
+            <option value="">-- No saved decoy selected --</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Duress Password Section -->
+      <div class="toggle-group" style="margin-top: 1.5rem;">
+        <span class="toggle-label">Use saved duress password</span>
+        <label class="switch">
+          <input type="checkbox" id="toggle-auto-duress" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <!-- Saved Duress status (Auto ON) -->
+      <div class="info-box" id="auto-duress-container">
+        <div class="info-box-content">
+          <span class="info-box-title" id="duress-status-title">Saved password is set</span>
+          <span class="info-box-subtitle" id="duress-status-updated">Updated just now</span>
+        </div>
+        <div class="info-box-actions">
+          <button type="button" class="btn btn-small" id="update-duress-btn">✎ Update</button>
+          <button type="button" class="btn btn-small" id="reset-duress-btn">↺ Reset</button>
+        </div>
+      </div>
+
+      <!-- Inline Duress Password Form (Hidden by default, shown on Update click) -->
+      <div class="inline-form" id="update-duress-form" style="display: none;">
+        <h3>Update Duress Password</h3>
+        
+        <div class="form-group" id="pin-confirm-group" style="display: none;">
+          <label for="confirm-vault-pin">Confirm Vault PIN</label>
+          <div class="input-wrapper">
+            <input type="password" id="confirm-vault-pin" placeholder="Enter PIN" class="mono" maxlength="4" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="confirm-vault-pin-error">Incorrect PIN.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="new-duress-password">New Duress Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="new-duress-password" placeholder="Enter new duress password" class="mono" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="new-duress-password-error">Please enter a password.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-duress-password">Confirm Duress Password</label>
+          <div class="input-wrapper">
+            <input type="password" id="confirm-duress-password" placeholder="Confirm new duress password" class="mono" autocomplete="off" autocorrect="off" spellcheck="false">
+          </div>
+          <div class="error-message" id="confirm-duress-password-error">Passwords do not match.</div>
+        </div>
+
+        <div class="inline-form-actions">
+          <button type="button" class="btn btn-small btn-primary" id="save-duress-btn">Save</button>
+          <button type="button" class="btn btn-small" id="cancel-duress-btn">Cancel</button>
+        </div>
+      </div>
+
+      <!-- One-time Duress Password Inputs (Auto OFF) -->
+      <div class="form-group" id="manual-duress-container" style="display: none;">
+        <label for="one-time-duress">One-time duress password</label>
+        <div class="input-wrapper">
+          <input type="password" id="one-time-duress" placeholder="Enter custom duress password" class="mono" autocomplete="off" autocorrect="off" spellcheck="false">
+          <button type="button" class="show-password-btn" id="toggle-one-time-duress">Show</button>
+        </div>
+        <div class="error-message" id="one-time-duress-error">Please enter a password different from real password.</div>
+      </div>
+
+      <!-- Generate Action Button -->
+      <button type="button" class="btn btn-primary" id="generate-btn" style="margin-top: 1.5rem;">
+        Generate Secure Link
+      </button>
+
+      <!-- Output Area -->
+      <div id="output-container" style="display: none;">
+        <div class="output-area" id="output-link">
+          <!-- Link will be generated here -->
+        </div>
+        <div class="output-actions">
+          <button type="button" class="btn" id="copy-link-btn">📋 Copy Link</button>
+          <button type="button" class="btn" id="share-link-btn">↗ Share</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Vault Setup Modal -->
+  <div class="modal-overlay" id="setup-modal">
+    <div class="modal-content">
+      <div class="modal-title">Set up your secure vault</div>
+      <div class="modal-body">
+        Choose a 4-digit PIN to protect your saved settings on this device.
+        <br><br>
+        Your PIN encrypts your duress password locally. It is never sent anywhere.
+      </div>
+      <div class="pin-inputs" id="setup-pin-inputs">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="error-message" id="setup-pin-error" style="text-align: center; margin-bottom: 1rem;">Please enter a 4-digit numeric PIN.</div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="setup-continue-btn">Continue</button>
+        <button type="button" class="btn" id="setup-skip-btn">Skip for now</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vault Unlock Modal (Triggered if vault is set up but key not initialized in memory) -->
+  <div class="modal-overlay" id="unlock-modal">
+    <div class="modal-content">
+      <div class="modal-title">Unlock Secure Vault</div>
+      <div class="modal-body">
+        Enter your 4-digit PIN to access your settings.
+      </div>
+      <div class="pin-inputs" id="unlock-pin-inputs">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+        <input type="password" class="pin-input" maxlength="1" pattern="[0-9]*" inputmode="numeric" autocomplete="off">
+      </div>
+      <div class="error-message" id="unlock-pin-error" style="text-align: center; margin-bottom: 1rem;">Incorrect PIN. Please try again.</div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-primary" id="unlock-submit-btn">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/generator.js"></script>
+</body>
+</html>

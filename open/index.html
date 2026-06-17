@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureNote — Private link access</title>
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+  <div class="app-container" style="max-width: 440px; margin-top: 6rem;">
+    <header style="justify-content: center; border-bottom: none; margin-bottom: 0.5rem;">
+      <h1 style="font-size: 1.5rem; font-weight: 500;">SecureNote</h1>
+    </header>
+    <div style="text-align: center; color: var(--color-muted); font-size: 0.95rem; margin-bottom: 2rem;">
+      Private link access
+    </div>
+
+    <!-- Error message for invalid or expired link -->
+    <div id="expired-error-container" style="display: none; text-align: center; margin-bottom: 1rem;">
+      <div class="error-message" id="link-expired-error" style="display: block; font-size: 0.95rem;">This link is invalid or has expired.</div>
+    </div>
+
+    <!-- Normal decryption form -->
+    <main id="decrypt-form-container">
+      <div style="font-size: 0.9rem; text-align: center; margin-bottom: 1.5rem; color: var(--color-text);">
+        Enter the password to open this note.
+      </div>
+      
+      <form id="decrypt-form">
+        <div class="form-group">
+          <div class="input-wrapper">
+            <input type="password" id="receiver-password" placeholder="Password" class="mono" autocomplete="off" autocorrect="off" spellcheck="false" required>
+            <button type="button" class="show-password-btn" id="toggle-receiver-password">Show</button>
+          </div>
+          <div class="error-message" id="receiver-password-error">Invalid password.</div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="open-btn" style="margin-top: 1rem;">
+          Open
+        </button>
+      </form>
+    </main>
+  </div>
+
+  <script type="module" src="../src/receiver.js"></script>
+</body>
+</html>
