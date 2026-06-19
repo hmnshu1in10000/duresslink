@@ -84,38 +84,22 @@ export function formatRelativeTime(isoString) {
   return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
 }
 
-export async function sendPayloadToCloud(encryptedText) {
-  const formData = new URLSearchParams();
-  formData.append("content", encryptedText);
-  formData.append("expires", "2592000"); // 30 days (seconds)
-  formData.append("format", "url");
-
-  const response = await fetch("https://dpaste.com/api/", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: formData
-  });
+export async function sendPayloadToCloud(longUrl) {
+  const endpoint = `https://is.gd/create.php?format=json&url=${encodeURIComponent(longUrl)}`;
+  const response = await fetch(endpoint);
 
   if (!response.ok) {
-    throw new Error(`Cloud storage failure: ${response.status} ${response.statusText}`);
+    throw new Error(`Shortener failure: ${response.status} ${response.statusText}`);
   }
 
-  const responseText = await response.text();
-  const trimmed = responseText.trim();
-  const pasteID = trimmed.substring(trimmed.lastIndexOf("/") + 1);
-  if (!pasteID) {
-    throw new Error("Invalid response received from cloud storage.");
+  const data = await response.json();
+  if (data.errorcode) {
+    throw new Error(`is.gd API error: ${data.errormessage} (code: ${data.errorcode})`);
   }
-  return pasteID;
-}
 
-export async function fetchPayloadFromCloud(pasteID) {
-  const response = await fetch(`https://dpaste.com/${pasteID}.txt`);
-  if (!response.ok) {
-    throw new Error(`Cloud retrieval failure: ${response.status} ${response.statusText}`);
+  if (!data.shorturl) {
+    throw new Error("Invalid response received from is.gd API.");
   }
-  const responseText = await response.text();
-  return responseText.trim();
+
+  return data.shorturl;
 }

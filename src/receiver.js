@@ -1,10 +1,9 @@
 import { tryDecryptBlob } from "./crypto.js";
-import { sleep, fetchPayloadFromCloud } from "./utils.js";
+import { sleep } from "./utils.js";
 
 // DOM Elements
 const decryptFormContainer = document.getElementById("decrypt-form-container");
 const expiredErrorContainer = document.getElementById("expired-error-container");
-const loadingContainer = document.getElementById("loading-container");
 const decryptForm = document.getElementById("decrypt-form");
 const passwordInput = document.getElementById("receiver-password");
 const togglePasswordBtn = document.getElementById("toggle-receiver-password");
@@ -15,14 +14,14 @@ const passwordError = document.getElementById("receiver-password-error");
 let decryptedParts = null;
 
 // Initialization Flow
-async function init() {
+function init() {
   const hash = window.location.hash.slice(1);
   if (!hash) {
     showExpiredError();
     return;
   }
 
-  // Option 1: Standard Link (e.g. #v1.blobA.blobB)
+  // Parse and validate Standard Hash (e.g. v1.blobA.blobB)
   const parts = hash.split(".");
   if (parts.length === 3 && parts[0] === "v1" && parts[1] && parts[2]) {
     decryptedParts = {
@@ -30,43 +29,9 @@ async function init() {
       blobY: parts[2]
     };
     showDecryptForm();
-    return;
+  } else {
+    showExpiredError();
   }
-
-  // Option 2: Shortened Link (alphanumeric token representing paste ID)
-  if (/^[A-Za-z0-9]+$/.test(hash)) {
-    showLoading();
-    try {
-      const rawPayload = await fetchPayloadFromCloud(hash);
-      const cloudParts = rawPayload ? rawPayload.split(".") : [];
-      
-      if (cloudParts.length === 3 && cloudParts[0] === "v1" && cloudParts[1] && cloudParts[2]) {
-        decryptedParts = {
-          blobX: cloudParts[1],
-          blobY: cloudParts[2]
-        };
-        hideLoading();
-        showDecryptForm();
-        return;
-      }
-    } catch (err) {
-      console.error("Link retrieval failed:", err);
-    }
-  }
-
-  // Fallback: Invalid or expired shortened/standard hash
-  hideLoading();
-  showExpiredError();
-}
-
-function showLoading() {
-  decryptFormContainer.style.display = "none";
-  expiredErrorContainer.style.display = "none";
-  loadingContainer.style.display = "block";
-}
-
-function hideLoading() {
-  loadingContainer.style.display = "none";
 }
 
 function showDecryptForm() {

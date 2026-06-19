@@ -10,7 +10,10 @@
   <div class="app-container">
     <header>
       <h1>SecureNote</h1>
-      <a href="./settings/" class="nav-btn" id="settings-nav-btn">⚙ Settings</a>
+      <div style="display: flex; gap: 1rem;">
+        <a href="./about/" class="nav-btn">ℹ Info & Tutorial</a>
+        <a href="./settings/" class="nav-btn" id="settings-nav-btn">⚙ Settings</a>
+      </div>
     </header>
 
     <main>
@@ -178,7 +181,7 @@
       <li style="position: relative; padding-left: 1.5rem; line-height: 1.6;">
         <span style="position: absolute; left: 0; color: var(--color-accent); font-size: 0.8rem;">■</span>
         <strong style="color: var(--color-text); display: block; margin-bottom: 0.25rem;">Shortened Links</strong>
-        The app securely streams the encrypted text block to an anonymous, zero-knowledge storage vault. To ensure performance, these links automatically expire and self-destruct after exactly 1 month.
+        The app securely routes your link through a developer-grade global API (is.gd) for high-speed routing and permanent lifespans. Since redirection occurs at the DNS/server level, the receiver is automatically directed to the decryption page with all security parameters intact.
       </li>
     </ul>
   </div>

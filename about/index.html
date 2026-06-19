@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SecureNote — Info & Tutorial</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <style>
+    /* Info-specific custom styling that complements main.css */
+    .info-section {
+      margin-bottom: 2rem;
+    }
+    .info-section h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+    }
+    .info-section p {
+      font-size: 0.95rem;
+      color: var(--color-muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 1.5rem;
+    }
+    .step-item {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      padding: 1.25rem;
+      border-radius: 4px;
+      margin-bottom: 0.75rem;
+      position: relative;
+    }
+    .step-number {
+      display: inline-block;
+      background-color: var(--color-accent);
+      color: var(--color-bg);
+      font-weight: 600;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 1.5rem;
+      font-size: 0.8rem;
+      margin-right: 0.5rem;
+    }
+    .step-title {
+      font-weight: 600;
+      color: var(--color-text);
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      display: inline-block;
+    }
+    .step-desc {
+      font-size: 0.9rem;
+      color: var(--color-muted);
+      line-height: 1.5;
+      margin-left: 2rem;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .feature-card {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      padding: 1rem;
+      border-radius: 4px;
+    }
+    .feature-title {
+      color: var(--color-text);
+      font-weight: 500;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+    .feature-desc {
+      font-size: 0.85rem;
+      color: var(--color-muted);
+      line-height: 1.4;
+    }
+    @media (max-width: 600px) {
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <a href="../" class="nav-btn">← Back</a>
+      <h1>Info & Tutorial</h1>
+      <div style="width: 45px;"></div> <!-- spacer -->
+    </header>
+
+    <main>
+      <!-- Section: Overview -->
+      <section class="info-section">
+        <h2>What is SecureNote?</h2>
+        <p>
+          SecureNote (internal name: <strong>DuressLink</strong>) is a zero-knowledge, client-side-only dual-password link protection tool. It allows you to encrypt a sensitive target URL behind a real password, while simultaneously encrypting an innocent decoy URL behind a duress password — both packed into a single link.
+        </p>
+      </section>
+
+      <!-- Section: Plausible Deniability -->
+      <section class="info-section">
+        <h2>Why Use It? (Plausible Deniability)</h2>
+        <p>
+          If you are forced or coerced by an adversary, inspector, or employer to unlock your shared link, you can safely hand over your <strong>duress password</strong>. This decrypts and redirects the visitor to an innocent decoy website (like a random Wikipedia page). 
+        </p>
+        <p>
+          Because there is only one password field on the receiver page and the two encrypted payloads are shuffled randomly, it is mathematically impossible for an outside observer to prove that a second "real" password or target URL exists.
+        </p>
+      </section>
+
+      <!-- Section: How It Works -->
+      <section class="info-section">
+        <h2>How It Works (The Cryptography)</h2>
+        <p>
+          SecureNote operates entirely in the browser using the Web Cryptography API. No plaintext URLs or passwords are ever sent to a server.
+        </p>
+        <div class="feature-grid" style="margin-bottom: 1.5rem;">
+          <div class="feature-card">
+            <span class="feature-title">Key Derivation</span>
+            <span class="feature-desc">Passwords are hashed using PBKDF2 with SHA-256 and 310,000 iterations to derive high-strength 256-bit AES-GCM encryption keys.</span>
+          </div>
+          <div class="feature-card">
+            <span class="feature-title">Payload Encryption</span>
+            <span class="feature-desc">Both URLs are encrypted independently using AES-GCM (256-bit). Random 12-byte initialization vectors (IVs) are created for each.</span>
+          </div>
+          <div class="feature-card">
+            <span class="feature-title">Shuffled Packing</span>
+            <span class="feature-desc">The two resulting encrypted payloads (Blob A & B) are randomly shuffled so their order doesn't leak which is the real URL, and packed in the hash fragment.</span>
+          </div>
+          <div class="feature-card">
+            <span class="feature-title">Redirection & History</span>
+            <span class="feature-desc">The receiver page attempts parallel decryption. Once unlocked, the script purges the hash fragment from browser history using history.replaceState before redirecting.</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Step-by-Step Tutorial -->
+      <section class="info-section">
+        <h2>Step-by-Step Tutorial</h2>
+        <ul class="step-list">
+          <li class="step-item">
+            <span class="step-number">1</span>
+            <span class="step-title">Vault Setup (Optional)</span>
+            <div class="step-desc">
+              When you first load the generator, you can choose a 4-digit PIN to set up your Local Vault. This vault stores your settings, custom decoy URLs, and your default duress password locally in your browser, encrypted using PBKDF2 (200,000 iterations).
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">2</span>
+            <span class="step-title">Enter Target & Password</span>
+            <div class="step-desc">
+              Paste the sensitive link you want to protect in the "Your Link" field. Then, choose a strong password (minimum 8 characters) that the real recipient will use to open the note.
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">3</span>
+            <span class="step-title">Configure Decoy Settings</span>
+            <div class="step-desc">
+              Select what the decoy link will open if the duress password is entered. By default, it automatically fetches a random live Wikipedia article, but you can edit it manually or select from your custom saved decoys list.
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">4</span>
+            <span class="step-title">Configure Duress Password</span>
+            <div class="step-desc">
+              Set the password that triggers the decoy redirection. You can use your saved duress password (default is <code>open</code>) or type in a unique one-time duress password for a single link.
+            </div>
+          </li>
+          <li class="step-item">
+            <span class="step-number">5</span>
+            <span class="step-title">Shorten & Generate</span>
+            <div class="step-desc">
+              Click **Generate Secure Link** to create the classic unshortened URL. Alternatively, toggle **Shorten link** to route the URL through a developer-grade global API (<code>is.gd</code>) for high-speed redirection and permanent lifespans.
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <!-- Section: Features List -->
+      <section class="info-section">
+        <h2>Key Security Features</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <span class="feature-title">Plausible Deniability</span>
+            <span class="feature-desc">Dual payloads randomly ordered, giving an adversary no way to verify if a second password/URL exists.</span>
+          </div>
+          <div class="feature-card">
+            <span class="feature-title">CORS-Safe Decoys</span>
+            <span class="feature-desc">Auto-Wikipedia prefetching fetches clean, live random articles via origin-isolated API calls.</span>
+          </div>
+          <div class="feature-card">
+            <span class="feature-title">Permanent Shortening</span>
+            <span class="feature-desc">Shortened links use the is.gd API to perform server-level redirects, passing URL hashes directly to the receiver.</span>
+          </div>
+          <div class="feature-card">
+            <span class="feature-title">History Leakage Defense</span>
+            <span class="feature-desc">Clears location hash from history state immediately before redirecting, leaving no browser traces.</span>
+          </div>
+          <div class="feature-card">
+            <span class="feature-title">Brute-Force Friction</span>
+            <span class="feature-desc">Failed password attempts trigger a uniform 800ms delay to thwart bot attacks.</span>
+          </div>
+          <div class="feature-card">
+            <span class="feature-title">Scrubbed Memory</span>
+            <span class="feature-desc">Passwords and cryptographic keys are zeroed out from variables immediately after use.</span>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+</body>
+</html>

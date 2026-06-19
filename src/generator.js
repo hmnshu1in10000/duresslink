@@ -517,16 +517,15 @@ generateBtn.addEventListener("click", async () => {
     
     generatedHash = await generateHashString(realURL, realPass, decoyURL, duressPass);
     
-    let finalHash = generatedHash;
-    if (toggleShorten.checked) {
-      generateBtn.innerHTML = '<span class="spinner"></span> Shortening...';
-      const pasteID = await sendPayloadToCloud(generatedHash);
-      finalHash = pasteID;
-    }
-
     // Construct absolute target URL
     const basePath = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-    const secureLink = `${window.location.origin}${basePath}/open/#${finalHash}`;
+    let secureLink = `${window.location.origin}${basePath}/open/#${generatedHash}`;
+
+    if (toggleShorten.checked) {
+      generateBtn.innerHTML = '<span class="spinner"></span> Shortening...';
+      const shortUrl = await sendPayloadToCloud(secureLink);
+      secureLink = shortUrl;
+    }
     
     // Render
     outputLink.textContent = secureLink;
