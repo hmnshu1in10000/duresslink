@@ -101,5 +101,33 @@ export async function sendPayloadToCloud(longUrl) {
     throw new Error("Invalid response received from is.gd API.");
   }
 
-  return data.shorturl;
+  // Extract the short code (e.g. "K1dIxF" from "https://is.gd/K1dIxF")
+  const shortUrl = data.shorturl;
+  const code = shortUrl.substring(shortUrl.lastIndexOf('/') + 1);
+  return code;
+}
+
+export async function fetchPayloadFromCloud(shortCode) {
+  const endpoint = `https://is.gd/forward.php?format=json&shorturl=${encodeURIComponent(shortCode)}`;
+  const response = await fetch(endpoint);
+
+  if (!response.ok) {
+    throw new Error(`Lookup failure: ${response.status} ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  if (data.errorcode) {
+    throw new Error(`is.gd API error: ${data.errormessage} (code: ${data.errorcode})`);
+  }
+
+  if (!data.url) {
+    throw new Error("Invalid response received from is.gd API.");
+  }
+
+  // Extract the hash from resolved URL (e.g. "https://domain.com/open/#v1.blobA.blobB")
+  const hashIndex = data.url.indexOf('#');
+  if (hashIndex === -1) {
+    throw new Error("No hash fragment found in resolved URL.");
+  }
+  return data.url.substring(hashIndex + 1);
 }

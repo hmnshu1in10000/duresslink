@@ -523,8 +523,8 @@ generateBtn.addEventListener("click", async () => {
 
     if (toggleShorten.checked) {
       generateBtn.innerHTML = '<span class="spinner"></span> Shortening...';
-      const shortUrl = await sendPayloadToCloud(secureLink);
-      secureLink = shortUrl;
+      const code = await sendPayloadToCloud(secureLink);
+      secureLink = `${window.location.origin}${basePath}/open/#${code}`;
     }
     
     // Render
